@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Transparent Chatbot</title>
+  <meta charset="UTF-8">
+  <title>Basic Chatbot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: transparent;
-      margin: 0;
-      padding: 0;
+      background: #f5f5f5;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,114 +14,116 @@
     }
 
     .chat-container {
-      width: 350px;
-      background: rgba(255, 255, 255, 0.1); /* semi-transparent */
-      border: 1px solid #ccc;
-      border-radius: 12px;
+      width: 400px;
+      background: white;
+      border-radius: 10px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     .chat-box {
-      flex: 1;
-      padding: 16px;
+      flex-grow: 1;
+      padding: 20px;
       overflow-y: auto;
-      color: #fff;
+      max-height: 400px;
     }
 
-    .chat-message {
-      margin-bottom: 12px;
+    .message {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
     }
 
-    .chat-message.user {
-      text-align: right;
-      color: #00eaff;
+    .user {
+      background: #d1e7dd;
+      align-self: flex-end;
     }
 
-    .chat-message.bot {
-      text-align: left;
-      color: #ffffff;
+    .bot {
+      background: #f8d7da;
+      align-self: flex-start;
     }
 
-    .input-box {
+    .input-area {
       display: flex;
       border-top: 1px solid #ccc;
-      background: rgba(0, 0, 0, 0.3);
     }
 
-    .input-box input {
-      flex: 1;
+    input {
+      flex-grow: 1;
       padding: 10px;
       border: none;
-      background: transparent;
-      color: #fff;
       outline: none;
     }
 
-    .input-box button {
+    button {
       padding: 10px;
-      background: #00bcd4;
-      color: #fff;
+      background: #007bff;
+      color: white;
       border: none;
       cursor: pointer;
     }
 
-    .input-box button:hover {
-      background: #019aa9;
+    button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
+
   <div class="chat-container">
-    <div class="chat-box" id="chatBox">
-      <div class="chat-message bot">Hi! How can I help you today?</div>
-    </div>
-    <div class="input-box">
-      <input type="text" id="userInput" placeholder="Type a message..." />
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type a message...">
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
 
   <script>
-    function sendMessage() {
-      const input = document.getElementById('userInput');
-      const message = input.value.trim();
-      if (message === '') return;
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
 
-      addMessage('user', message);
-      input.value = '';
-      generateBotReply(message.toLowerCase());
-    }
-
-    function addMessage(sender, text) {
-      const chatBox = document.getElementById('chatBox');
-      const messageDiv = document.createElement('div');
-      messageDiv.className = 'chat-message ' + sender;
-      messageDiv.innerText = text;
-      chatBox.appendChild(messageDiv);
+    function appendMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.innerText = text;
+      chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    function generateBotReply(message) {
-      let reply = "I'm not sure I understand. Can you rephrase?";
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+      appendMessage(message, "user");
+      userInput.value = "";
+      setTimeout(() => {
+        respondToMessage(message.toLowerCase());
+      }, 500);
+    }
 
-      if (message.includes('hello') || message.includes('hi')) {
-        reply = "Hello there! 😊";
-      } else if (message.includes('ngo')) {
-        reply = "We're a non-profit organization working to make a difference.";
-      } else if (message.includes('help') || message.includes('volunteer')) {
-        reply = "We’d love your support! Please visit the Volunteer section on our website.";
-      } else if (message.includes('donate')) {
-        reply = "You can donate via the 'Donate' page on our site. Thank you! 🙏";
+    function respondToMessage(message) {
+      let response = "Sorry, I didn’t understand that. Try asking about our NGO, volunteering, or donations.";
+      
+      if (message.includes("hello") || message.includes("hi")) {
+        response = "Hi there! 👋 How can I help you today?";
+      } else if (message.includes("ngo")) {
+        response = "We are a non-profit working to improve health and education in rural areas.";
+      } else if (message.includes("volunteer")) {
+        response = "You can join our volunteer program here: [volunteer link]";
+      } else if (message.includes("donate")) {
+        response = "Support our cause by donating here: [donation link]";
       }
 
-      setTimeout(() => {
-        addMessage('bot', reply);
-      }, 600);
+      appendMessage(response, "bot");
     }
+
+    // Optional: Send message on Enter key press
+    userInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
   </script>
+
 </body>
 </html>
