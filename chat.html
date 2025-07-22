@@ -14,8 +14,7 @@
     }
 
     body {
-      background: linear-gradient(135deg, #1a2a3a, #2c3e50);
-      background-attachment: fixed;
+      background: transparent;
       min-height: 100vh;
       padding: 20px;
     }
@@ -26,7 +25,7 @@
       right: 20px;
       width: 100%;
       max-width: 400px;
-      background: rgba(85, 107, 47, 0.25);
+      background: rgba(0, 0, 0, 0.932);
       border: 1px solid rgba(139, 172, 79, 0.3);
       border-radius: 18px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -51,7 +50,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
     }
 
     .chat-container.minimized .chat-header,
@@ -356,6 +355,21 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+    function typeMessage(element, text, speed = 40) {
+      element.innerHTML = '';
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          element.innerHTML = text + `<div class="message-time">${getCurrentTime()}</div>`;
+        }
+      }
+      type();
+    }
+
     function generateBotReply(message) {
       let reply = "I'm not sure I understand. Could you rephrase that? I can tell you about our NGO, volunteering opportunities, or how to donate.";
 
@@ -374,7 +388,12 @@
       }
 
       setTimeout(() => {
-        addMessage('bot', reply);
+        const chatBox = document.getElementById('chatBox');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message bot';
+        chatBox.appendChild(messageDiv);
+        typeMessage(messageDiv, reply);
+        chatBox.scrollTop = chatBox.scrollHeight;
       }, 300);
     }
 
@@ -383,7 +402,6 @@
       chatContainer.classList.toggle('minimized');
     }
 
-    // Toggle chat when clicking the minimized button
     document.getElementById('chatContainer').addEventListener('click', function(e) {
       if (this.classList.contains('minimized')) {
         toggleChat();
@@ -391,7 +409,6 @@
       e.stopPropagation();
     });
 
-    // Close chat when clicking outside
     document.addEventListener('click', function(e) {
       const chatContainer = document.getElementById('chatContainer');
       if (!chatContainer.contains(e.target) && !chatContainer.classList.contains('minimized')) {
