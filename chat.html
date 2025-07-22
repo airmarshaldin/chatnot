@@ -1,129 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Basic Chatbot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NGO Support Chatbot</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+      background-attachment: fixed;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     .chat-container {
-      width: 400px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      background: rgba(85, 107, 47, 0.25); /* Olive green transparency */
+      border: 1px solid rgba(139, 172, 79, 0.3);
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      height: 85vh;
+      max-height: 700px;
+      transition: all 0.3s ease;
+    }
+
+    .chat-header {
+      background: rgba(85, 107, 47, 0.5);
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(139, 172, 79, 0.3);
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header h2 {
+      color: #f0f7da;
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin-left: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #6b8e23, #9acd32);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
     }
 
     .chat-box {
-      flex-grow: 1;
+      flex: 1;
       padding: 20px;
       overflow-y: auto;
-      max-height: 400px;
-    }
-
-    .message {
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-    }
-
-    .user {
-      background: #d1e7dd;
-      align-self: flex-end;
-    }
-
-    .bot {
-      background: #f8d7da;
-      align-self: flex-start;
-    }
-
-    .input-area {
       display: flex;
-      border-top: 1px solid #ccc;
+      flex-direction: column;
     }
 
-    input {
-      flex-grow: 1;
-      padding: 10px;
+    .chat-message {
+      max-width: 80%;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      border-radius: 18px;
+      position: relative;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+      background: rgba(154, 205, 50, 0.3);
+      border: 1px solid rgba(154, 205, 50, 0.4);
+      color: #eaffd0;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.bot {
+      align-self: flex-start;
+      background: rgba(107, 142, 35, 0.3);
+      border: 1px solid rgba(139, 172, 79, 0.3);
+      color: #f5ffdf;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    .input-box {
+      display: flex;
+      border-top: 1px solid rgba(139, 172, 79, 0.3);
+      background: rgba(85, 107, 47, 0.4);
+      padding: 12px 16px;
+    }
+
+    .input-box input {
+      flex: 1;
+      padding: 14px 18px;
       border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #f0f7da;
+      border-radius: 30px;
       outline: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
-    button {
-      padding: 10px;
-      background: #007bff;
+    .input-box input:focus {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.4);
+    }
+
+    .input-box input::placeholder {
+      color: rgba(240, 247, 218, 0.6);
+    }
+
+    .input-box button {
+      width: 50px;
+      height: 50px;
+      margin-left: 12px;
+      background: linear-gradient(135deg, #6b8e23, #9acd32);
       color: white;
       border: none;
+      border-radius: 50%;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    button:hover {
-      background: #0056b3;
+    .input-box button:hover {
+      background: linear-gradient(135deg, #5a7c1d, #8ab830);
+      transform: translateY(-2px);
+    }
+
+    .input-box button:active {
+      transform: translateY(1px);
+    }
+
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      background: rgba(107, 142, 35, 0.3);
+      padding: 14px 20px;
+      border-radius: 18px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(139, 172, 79, 0.3);
+    }
+
+    .typing-indicator span {
+      height: 8px;
+      width: 8px;
+      background: #f0f7da;
+      display: inline-block;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typing 1.2s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    .welcome-text {
+      text-align: center;
+      padding: 20px;
+      color: rgba(240, 247, 218, 0.8);
+      font-size: 0.9rem;
+      font-style: italic;
+      border-bottom: 1px solid rgba(139, 172, 79, 0.2);
+    }
+
+    /* Scrollbar styling */
+    .chat-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+      background: rgba(85, 107, 47, 0.1);
+      border-radius: 10px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+      background: rgba(154, 205, 50, 0.4);
+      border-radius: 10px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb:hover {
+      background: rgba(154, 205, 50, 0.6);
+    }
+
+    @media (max-width: 480px) {
+      .chat-container {
+        height: 90vh;
+        border-radius: 14px;
+      }
+      
+      .chat-header {
+        padding: 14px;
+      }
+      
+      .chat-message {
+        max-width: 90%;
+        padding: 12px 16px;
+      }
     }
   </style>
 </head>
 <body>
-
   <div class="chat-container">
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type a message...">
-      <button onclick="sendMessage()">Send</button>
+    <div class="chat-header">
+      <div class="avatar">
+        <i class="fas fa-hands-helping"></i>
+      </div>
+      <h2>NGO Support Assistant</h2>
+    </div>
+    
+    <div class="welcome-text">
+      How can we assist you today? Ask about our NGO, volunteering, or donations.
+    </div>
+    
+    <div class="chat-box" id="chatBox">
+      <div class="chat-message bot">
+        Hello! 👋 I'm here to help you learn about our NGO. How can I assist you today?
+        <div class="message-time">Just now</div>
+      </div>
+    </div>
+    
+    <div class="typing-indicator" id="typingIndicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    
+    <div class="input-box">
+      <input type="text" id="userInput" placeholder="Ask about our NGO..." />
+      <button onclick="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
     </div>
   </div>
 
   <script>
-    const chatBox = document.getElementById("chatBox");
-    const userInput = document.getElementById("userInput");
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (message === '') return;
+      
+      addMessage('user', message);
+      input.value = '';
+      
+      // Show typing indicator
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.style.display = 'flex';
+      
+      setTimeout(() => {
+        typingIndicator.style.display = 'none';
+        generateBotReply(message.toLowerCase());
+      }, 1000);
+    }
+    
+    // Allow sending message with Enter key
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
 
-    function appendMessage(text, sender) {
-      const msg = document.createElement("div");
-      msg.classList.add("message", sender);
-      msg.innerText = text;
-      chatBox.appendChild(msg);
+    function addMessage(sender, text) {
+      const chatBox = document.getElementById('chatBox');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `chat-message ${sender}`;
+      messageDiv.innerHTML = text + `<div class="message-time">${getCurrentTime()}</div>`;
+      chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    function sendMessage() {
-      const message = userInput.value.trim();
-      if (!message) return;
-      appendMessage(message, "user");
-      userInput.value = "";
-      setTimeout(() => {
-        respondToMessage(message.toLowerCase());
-      }, 500);
-    }
+    function generateBotReply(message) {
+      let reply = "I'm not sure I understand. Could you rephrase that? I can tell you about our NGO, volunteering opportunities, or how to donate.";
 
-    function respondToMessage(message) {
-      let response = "Sorry, I didn’t understand that. Try asking about our NGO, volunteering, or donations.";
-      
-      if (message.includes("hello") || message.includes("hi")) {
-        response = "Hi there! 👋 How can I help you today?";
-      } else if (message.includes("ngo")) {
-        response = "We are a non-profit working to improve health and education in rural areas.";
-      } else if (message.includes("volunteer")) {
-        response = "You can join our volunteer program here: [volunteer link]";
-      } else if (message.includes("donate")) {
-        response = "Support our cause by donating here: [donation link]";
+      if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+        reply = "Hello there! 😊 How can I assist you today?";
+      } else if (message.includes('ngo') || message.includes('NGO') || message.includes('organization') || message.includes('about')) {
+        reply = "We're a non-profit organization dedicated to environmental conservation and community development. Founded in 2010, we've planted over 50,000 trees and built 15 schools in underprivileged areas.";
+      } else if (message.includes('help') || message.includes('volunteer') || message.includes('support')) {
+        reply = "We'd love your support! 🙌 We have volunteering opportunities in education, environmental projects, and community outreach. You can sign up through our website or visit our office at 123 Green Street.";
+      } else if (message.includes('donate') || message.includes('contribution') || message.includes('fund')) {
+        reply = "Thank you for considering a donation! 💚 You can donate via our website's 'Donate' page, through bank transfer (Acct: NGO-123456), or in person at our office. All contributions help us continue our important work.";
+      } else if (message.includes('contact') || message.includes('email') || message.includes('phone')) {
+        reply = "You can reach us at:<br>📞 Phone: +1 (555) 123-4567<br>✉️ Email: info@our-ngo.org<br>📍 Address: 123 Green Street, Eco City<br>We're available Monday-Friday, 9AM-5PM.";
+      } else if (message.includes('project') || message.includes('initiative') || message.includes('program')) {
+        reply = "Our current initiatives include:<br>1. 🌳 Urban Reforestation Program<br>2. 📚 Rural Education Support<br>3. 🚰 Clean Water Access Project<br>4. ♻️ Community Recycling Initiative<br>Which one would you like to know more about?";
       }
 
-      appendMessage(response, "bot");
+      setTimeout(() => {
+        addMessage('bot', reply);
+      }, 300);
     }
-
-    // Optional: Send message on Enter key press
-    userInput.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") sendMessage();
-    });
   </script>
-
 </body>
 </html>
