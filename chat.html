@@ -16,17 +16,17 @@
     body {
       background: linear-gradient(135deg, #1a2a3a, #2c3e50);
       background-attachment: fixed;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
       padding: 20px;
     }
 
     .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
       width: 100%;
       max-width: 400px;
-      background: rgba(85, 107, 47, 0.25); /* Olive green transparency */
+      background: rgba(85, 107, 47, 0.25);
       border: 1px solid rgba(139, 172, 79, 0.3);
       border-radius: 18px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -37,6 +37,37 @@
       height: 85vh;
       max-height: 700px;
       transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .chat-container.minimized {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #6b8e23, #9acd32);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-container.minimized .chat-header,
+    .chat-container.minimized .welcome-text,
+    .chat-container.minimized .chat-box,
+    .chat-container.minimized .typing-indicator,
+    .chat-container.minimized .input-box {
+      display: none;
+    }
+
+    .chat-container.minimized::before {
+      content: '\f086';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      color: white;
+      font-size: 24px;
     }
 
     .chat-header {
@@ -45,6 +76,7 @@
       border-bottom: 1px solid rgba(139, 172, 79, 0.3);
       display: flex;
       align-items: center;
+      cursor: pointer;
     }
 
     .chat-header h2 {
@@ -155,7 +187,7 @@
       justify-content: center;
       font-size: 18px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .input-box button:hover {
@@ -209,7 +241,6 @@
       border-bottom: 1px solid rgba(139, 172, 79, 0.2);
     }
 
-    /* Scrollbar styling */
     .chat-box::-webkit-scrollbar {
       width: 8px;
     }
@@ -230,6 +261,9 @@
 
     @media (max-width: 480px) {
       .chat-container {
+        bottom: 10px;
+        right: 10px;
+        max-width: 90%;
         height: 90vh;
         border-radius: 14px;
       }
@@ -242,12 +276,17 @@
         max-width: 90%;
         padding: 12px 16px;
       }
+      
+      .chat-container.minimized {
+        width: 50px;
+        height: 50px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header" onclick="toggleChat()">
       <div class="avatar">
         <i class="fas fa-hands-helping"></i>
       </div>
@@ -293,7 +332,6 @@
       addMessage('user', message);
       input.value = '';
       
-      // Show typing indicator
       const typingIndicator = document.getElementById('typingIndicator');
       typingIndicator.style.display = 'flex';
       
@@ -303,7 +341,6 @@
       }, 1000);
     }
     
-    // Allow sending message with Enter key
     document.getElementById('userInput').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         sendMessage();
@@ -340,6 +377,27 @@
         addMessage('bot', reply);
       }, 300);
     }
+
+    function toggleChat() {
+      const chatContainer = document.getElementById('chatContainer');
+      chatContainer.classList.toggle('minimized');
+    }
+
+    // Toggle chat when clicking the minimized button
+    document.getElementById('chatContainer').addEventListener('click', function(e) {
+      if (this.classList.contains('minimized')) {
+        toggleChat();
+      }
+      e.stopPropagation();
+    });
+
+    // Close chat when clicking outside
+    document.addEventListener('click', function(e) {
+      const chatContainer = document.getElementById('chatContainer');
+      if (!chatContainer.contains(e.target) && !chatContainer.classList.contains('minimized')) {
+        chatContainer.classList.add('minimized');
+      }
+    });
   </script>
 </body>
 </html>
