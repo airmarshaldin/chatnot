@@ -62,7 +62,7 @@
     }
 
     .chat-container.minimized::before {
-      content: '\f086';
+      content: '\f590'; /* Headset icon */
       font-family: 'Font Awesome 6 Free';
       font-weight: 900;
       color: white;
@@ -367,7 +367,9 @@
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
       messageDiv.className = `chat-message ${sender}`;
+      chatBox.scrollTop = chatBox.scrollHeight;
       messageDiv.innerHTML = text + `<div class="message-time">${getCurrentTime()}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
       chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -380,8 +382,11 @@
           element.innerHTML += text.charAt(i);
           i++;
           setTimeout(type, speed);
+          chatBox.scrollTop = chatBox.scrollHeight;
         } else {
           element.innerHTML = text + `<div class="message-time">${getCurrentTime()}</div>`;
+
+          chatBox.scrollTop = chatBox.scrollHeight;
         }
       }
       type();
